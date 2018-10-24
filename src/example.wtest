@@ -1,0 +1,88 @@
+import example.*
+
+// auto-generated at 23/10/2018 20:06:14
+test "inscripcion rechazada" {
+	
+	var progra = new Carrera(nombre="Programacion")
+	var mate1 = new Materia(carrera=progra, cupo=40, creditoQueOtorga=20, anio=1)
+	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
+	jl.aprobarMateria(mate1, 8)
+	mate1.inscribir(jl)
+	assert.notThat(mate1.alumnosInscriptos().contains(jl))
+}
+
+test "correlativa" {
+	var progra = new Carrera(nombre="Programacion")
+	var mate1 = new Materia(carrera=progra, cupo=40, creditoQueOtorga=20, anio=1)
+	var mate2 = new Correlativa(carrera=progra, cupo=30, creditoQueOtorga=35, anio=2, correlativas=[mate1])
+	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
+	mate2.inscribir(jl)
+	assert.notThat(mate2.alumnosInscriptos().contains(jl))
+}
+
+test "no hay cupo" {
+	
+	var progra = new Carrera(nombre="Programacion")
+	var mate1 = new Materia(carrera=progra, cupo=2, creditoQueOtorga=20, anio=1)
+	var rbt = new Estudiante(nombre="Roberto", carreras=[progra])
+	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
+	var luigi = new Estudiante(nombre="Luigi", carreras=[progra])
+	mate1.alumnosInscriptos([rbt, luigi])
+	mate1.inscribir(jl)
+	assert.notThat(mate1.alumnosInscriptos().contains(jl))
+	assert.that(mate1.listaDeEspera().contains(jl))
+}
+
+test "elitista" {
+	var progra = new Carrera(nombre="Programacion")
+	
+	var mate1 = new Materia(carrera=progra, cupo=2, creditoQueOtorga=20, anio=1)
+	var mate2 = new Materia(carrera=progra, cupo=5, creditoQueOtorga=34, anio=2)
+	var obj1 = new Materia(carrera=progra, cupo=6, creditoQueOtorga=23, anio=2)
+	var obj2 = new Elitista(carrera=progra, cupo=1, creditoQueOtorga=24, anio=3)
+	
+	var luigi = new Estudiante(nombre="Luigi", carreras=[progra])
+	var fati = new Estudiante(nombre="Fatigatti", carreras=[progra])
+	var rbt = new Estudiante(nombre="Roberto", carreras=[progra])
+	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
+	
+	fati.aprobarMateria(mate1, 8)
+	fati.aprobarMateria(mate2, 7)
+	fati.aprobarMateria(obj1, 9)
+	
+	rbt.aprobarMateria(mate1, 7)
+	rbt.aprobarMateria(mate2, 7)
+	rbt.aprobarMateria(obj1, 4)
+	
+	jl.aprobarMateria(mate1, 6)
+	jl.aprobarMateria(mate2, 5)
+	jl.aprobarMateria(obj1, 6)
+	
+	obj2.alumnosInscriptos([luigi])
+	obj2.listaDeEspera([fati, rbt, jl])
+	obj2.darDeBaja(luigi)
+	
+	assert.that(obj2.alumnosInscriptos().contains(fati))
+}
+
+test "mas Avanzado" {
+	
+	
+	
+	var progra = new Carrera(nombre="Programacion")
+	var mate1 = new Materia(carrera=progra, cupo=2, creditoQueOtorga=20, anio=1)
+	var mate2 = new Materia(carrera=progra, cupo=5, creditoQueOtorga=34, anio=2)
+	var obj1 = new Materia(carrera=progra, cupo=6, creditoQueOtorga=23, anio=2)
+	var obj2 = new Avanzada(carrera=progra, cupo=1, creditoQueOtorga=24, anio=3)
+	
+	var fati = new Estudiante(nombre="Fatigatti", carreras=[progra], materiasAprobadas=[mate1, mate2, obj1])
+	var rbt = new Estudiante(nombre="Roberto", carreras=[progra], materiasAprobadas=[mate1, mate2, obj1])
+	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra], materiasAprobadas=[mate1, mate2])
+	var luigi = new Estudiante(nombre="Luigi", carreras=[progra], materiasAprobadas=[mate1])
+	
+	obj2.alumnosInscriptos([fati])
+	obj2.listaDeEspera([rbt, jl, luigi])
+	obj2.darDeBaja(fati)
+	
+	assert.that(obj2.alumnosInscriptos().contains(rbt))
+}
