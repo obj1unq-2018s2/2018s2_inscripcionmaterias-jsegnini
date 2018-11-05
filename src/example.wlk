@@ -4,7 +4,10 @@ class Estudiante {
 	var property creditos = 0
 	var property carreras = []
 	var property materiasAprobadas = []
+	
+	// TODO Poner esto en un atributo lo deja inconsistente si se inscribe luego en una nueva carrera, mejor un método.
 	var todaMateriaEnCarrerasInscripto = carreras.map({carr => carr.materias()}).flatten()
+
 	method promedio() {
 		if (not materiasAprobadas.isEmpty()) {
 			return materiasAprobadas.map({mate => mate.nota()}).sum() / materiasAprobadas.size()
@@ -20,10 +23,12 @@ class Estudiante {
 	}
 	method materiasInscribibles(carrera){
 		if (carreras.contains(carrera)){
+			// TODO asSet innecesario
+			// TODO ¿por qué pasa nombre por parámetro?
 			return carrera.materias().asSet().filter {mat => mat.puedeInscribirse(nombre)}
 		}
 		else {
-			return "No está inscripto en la carrera"
+			return "No está inscripto en la carrera" // TODO Mal - Debería tirar excepción. No se puede retornar un mensaje de error.
 		}
 	}
 	method materiasEnQueEstaInscripto(){
@@ -43,6 +48,8 @@ class Materia {
 	var property listaDeEspera = []
 	method puedeInscribirse(estudiante){
 		return estudiante.carreras().contains(carrera) and
+				
+		// TODO Falta subtarea y delegar en estudiante.
 		not estudiante.materiasAprobadas().map {apro => apro.materia()}.contains(self) and
 		not alumnosInscriptos.contains(estudiante)
 	}
@@ -51,8 +58,10 @@ class Materia {
 			alumnosInscriptos.size() < cupo
 		) {
 			alumnosInscriptos.add(estudiante)
-			return "Inscripto"
+			return "Inscripto" // TODO No devuelvas el resultado como un string!
 		}
+		
+		// TODO Valida la condición dos veces.
 		else if (self.puedeInscribirse(estudiante)) {
 			listaDeEspera.add(estudiante)
 			return "Agregado a lista de espera"
@@ -65,7 +74,7 @@ class Materia {
 		if (alumnosInscriptos.contains(estudiante)) {
 			alumnosInscriptos.remove(estudiante)
 		}
-		if (not listaDeEspera.isEmpty()) {
+		if (not listaDeEspera.isEmpty()) { // TODO OJo, esto tiene que estar dentro del otro if.
 			alumnosInscriptos.add(listaDeEspera.first())
 			listaDeEspera.remove(listaDeEspera.first())
 		}
@@ -76,6 +85,7 @@ class Correlativa inherits Materia {
 	const property correlativas
 	override method puedeInscribirse(estudiante) {
 		return super(estudiante) and 
+		// TODO Podría usar una subtarea
 		correlativas.all({mate => estudiante.materiasAprobadas().contains(mate)})
 	}
 }
@@ -89,6 +99,7 @@ class Crediticia inherits Materia {
 
 class RequiereAnioAprobado inherits Materia {
 	method materiasAnioPrevio() {
+		// TODO Podría delegar en carrera.
 		return self.carrera().materias().map({mate => mate.anio() == self.anio() - 1})
 	}
 	override method puedeInscribirse(estudiante) {
@@ -108,8 +119,10 @@ class MateriaAprobada {
 	const property nota
 }
 
+// TODO Esto no se puede resolver con herencia porque no te permite modelar todas las combinaciones posibles.
 class Elitista inherits Materia {
 	override method darDeBaja(estudiante) {
+		// TODO Repite código
 		if (alumnosInscriptos.contains(estudiante)) {
 			alumnosInscriptos.remove(estudiante)
 		}
@@ -122,6 +135,7 @@ class Elitista inherits Materia {
 
 class Avanzada inherits Materia {
 	override method darDeBaja(estudiante) {
+		// TODO Repite código
 		if (alumnosInscriptos.contains(estudiante)) {
 			alumnosInscriptos.remove(estudiante)
 		}

@@ -7,7 +7,7 @@ test "inscripcion rechazada" {
 	var mate1 = new Materia(carrera=progra, cupo=40, creditoQueOtorga=20, anio=1)
 	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
 	jl.aprobarMateria(mate1, 8)
-	mate1.inscribir(jl)
+	mate1.inscribir(jl) // TODO Debería tirar excepcion.
 	assert.notThat(mate1.alumnosInscriptos().contains(jl))
 }
 
@@ -16,7 +16,7 @@ test "correlativa" {
 	var mate1 = new Materia(carrera=progra, cupo=40, creditoQueOtorga=20, anio=1)
 	var mate2 = new Correlativa(carrera=progra, cupo=30, creditoQueOtorga=35, anio=2, correlativas=[mate1])
 	var jl = new Estudiante(nombre="Jose Luis", carreras=[progra])
-	mate2.inscribir(jl)
+	mate2.inscribir(jl) // TODO Debería tirar excepcion.
 	assert.notThat(mate2.alumnosInscriptos().contains(jl))
 }
 
